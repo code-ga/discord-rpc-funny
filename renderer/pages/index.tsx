@@ -4,6 +4,8 @@ import Wrapper from "../components/Wrapper";
 import InputField from "./../components/InputField";
 import { Grid, GridItem } from "@chakra-ui/react";
 import { useState } from "react";
+import { Image } from "@chakra-ui/react";
+import ShowImage from "../components/ShowImage";
 interface inputType {
   clientId: string;
   details: string;
@@ -28,6 +30,7 @@ const Index = () => {
     values: inputType,
     formikHelpers: FormikHelpers<inputType>
   ) => {
+    console.log(values);
     if (isTurnOn) {
       if (values.clientId === "") {
         formikHelpers.setErrors({
@@ -68,7 +71,7 @@ const Index = () => {
         {({ values }) => (
           <Form>
             {/* {JSON.stringify(values)} */}
-            <Grid templateColumns="repeat(3, 1fr)" gap={3} mb="10px">
+            <Grid templateColumns="repeat(3, 1fr)" gap={3} mb={10}>
               <GridItem w="100%" h="90">
                 <InputField
                   label="client-id"
@@ -97,6 +100,7 @@ const Index = () => {
                   name="smallImageKey"
                   placeholder="dán url hình ảnh ( cái hình nhỏ ) vào đi"
                 />
+                {/* <ShowImage src={values.smallImageKey} /> */}
               </GridItem>
               <GridItem w="100%" h="90">
                 <InputField
@@ -119,6 +123,7 @@ const Index = () => {
                   name="largeImageKey"
                   placeholder="dán url hình ảnh (cái hình to) vào đi lưu ý hình cần phải lớn trên 512x512"
                 />
+                {/* <ShowImage src={values.largeImageKey} /> */}
               </GridItem>
             </Grid>
             <Button type="submit" colorScheme="teal" mt={4}>

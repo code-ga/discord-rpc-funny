@@ -11,7 +11,8 @@ import RPC from "discord-rpc";
 // Prepare the renderer once the app is ready
 app.on("ready", async () => {
   await prepareNext("./renderer");
-
+  // developers tools
+  console.log(isDev);
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -21,6 +22,7 @@ app.on("ready", async () => {
       preload: join(__dirname, "preload.js"),
     },
   });
+  // mainWindow.webContents.openDevTools();
 
   const url = isDev
     ? "http://localhost:8000/"
@@ -41,9 +43,24 @@ const client = new RPC.Client({ transport: "ipc" });
 //   console.log(message);
 //   setTimeout(() => event.sender.send("message", "hi from electron"), 500);
 // });
-ipcMain.on("startSet", async (event: IpcMainEvent, message: any) => {
+interface inputType {
+  clientId: string;
+  details: string;
+  state: string;
+  largeImageKey?: string;
+  smallImageKey?: string;
+  largeImageText?: string;
+  smallImageText?: string;
+}
+ipcMain.on("startSet", async (event: IpcMainEvent, message: inputType) => {
   const startTime = Date.now();
   console.log(message);
+  if (!message.largeImageKey) {
+    message.largeImageText = undefined;
+  }
+  if (!message.smallImageKey) {
+    message.smallImageText = undefined;
+  }
   client.on("ready", () => {
     client.setActivity({
       details: message.details,
@@ -52,21 +69,17 @@ ipcMain.on("startSet", async (event: IpcMainEvent, message: any) => {
       largeImageKey: message.largeImageKey,
       largeImageText: message.largeImageText,
       smallImageKey: message.smallImageKey,
-      smallImageText:
-        message.smallImageText.length > 0
-          ? message.smallImageText
-          : message.largeImageText,
+      smallImageText: message.smallImageText,
       instance: false,
+    });
+    ipcMain.on("stopSet", async (event: IpcMainEvent, message: any) => {
+      console.log(message);
+      await client.clearActivity();
+
+      // await client.login({ clientId: message.clientId });
+      event.sender.send("stopRpc", "stop set rpc");
     });
   });
   await client.login({ clientId: message.clientId });
   event.sender.send("startRpc", "start set rpc");
 });
-ipcMain.on("stopSet", async (event: IpcMainEvent, message: any) => {
-  console.log(message);
-  client.on("ready", () => {
-    client.clearActivity();
-  });
-  await client.login({ clientId: message.clientId });
-  event.sender.send("stopRpc", "stop set rpc");
-})
