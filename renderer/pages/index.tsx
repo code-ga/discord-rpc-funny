@@ -3,7 +3,7 @@ import { Button } from "@chakra-ui/react";
 import Wrapper from "../components/Wrapper";
 import InputField from "./../components/InputField";
 import { Grid, GridItem } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image } from "@chakra-ui/react";
 import ShowImage from "../components/ShowImage";
 interface inputType {
@@ -65,6 +65,7 @@ const Index = () => {
       return;
     }
   };
+
   return (
     <Wrapper>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
@@ -77,6 +78,7 @@ const Index = () => {
                   label="client-id"
                   name="clientId"
                   placeholder="type your client id"
+                  type="password"
                 />
               </GridItem>
               <GridItem w="100%" h="90">

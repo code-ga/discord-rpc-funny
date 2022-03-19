@@ -20,6 +20,7 @@ app.on("ready", async () => {
       nodeIntegration: false,
       contextIsolation: false,
       preload: join(__dirname, "preload.js"),
+      devTools: true,
     },
   });
   // mainWindow.webContents.openDevTools();
@@ -37,7 +38,7 @@ app.on("ready", async () => {
 
 // Quit the app once all windows are closed
 app.on("window-all-closed", app.quit);
-const client = new RPC.Client({ transport: "ipc" });
+
 // listen the channel `message` and resend the received message to the renderer process
 // ipcMain.on("messages", (event: IpcMainEvent, message: any) => {
 //   console.log(message);
@@ -53,8 +54,8 @@ interface inputType {
   smallImageText?: string;
 }
 ipcMain.on("startSet", async (event: IpcMainEvent, message: inputType) => {
+  const client = new RPC.Client({ transport: "ipc" });
   const startTime = Date.now();
-  console.log(message);
   if (!message.largeImageKey) {
     message.largeImageText = undefined;
   }
@@ -72,14 +73,19 @@ ipcMain.on("startSet", async (event: IpcMainEvent, message: inputType) => {
       smallImageText: message.smallImageText,
       instance: false,
     });
-    ipcMain.on("stopSet", async (event: IpcMainEvent, message: any) => {
-      console.log(message);
+
+    ipcMain.on("stopSet", async (event: IpcMainEvent, _message: any) => {
       await client.clearActivity();
 
       // await client.login({ clientId: message.clientId });
+      await client.destroy();
       event.sender.send("stopRpc", "stop set rpc");
     });
   });
-  await client.login({ clientId: message.clientId });
+  RPC.register(message.clientId);
+  await client.login({
+    clientId: message.clientId,
+  });
+
   event.sender.send("startRpc", "start set rpc");
 });
