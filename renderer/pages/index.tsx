@@ -65,7 +65,9 @@ const Index = () => {
       return;
     }
   };
-
+  const onClickToP = (e) => {
+    window.open("https://github.com/tritranduc");
+  };
   return (
     <Wrapper>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
@@ -134,6 +136,13 @@ const Index = () => {
           </Form>
         )}
       </Formik>
+      {/* create by */}
+      <p style={{ display: "flex" , margin : "1px"}}>
+        được làm bởi{" "}
+        <p onClick={onClickToP} style={{ cursor: "pointer", color: "blue" }}>
+          ai đó trên mạng
+        </p>
+      </p>
     </Wrapper>
   );
 };

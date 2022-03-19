@@ -9,11 +9,11 @@ import prepareNext from "electron-next";
 import RPC from "discord-rpc";
 
 // Prepare the renderer once the app is ready
+let mainWindow: BrowserWindow | null;
 app.on("ready", async () => {
   await prepareNext("./renderer");
   // developers tools
-  console.log(isDev);
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -34,6 +34,10 @@ app.on("ready", async () => {
       });
 
   mainWindow.loadURL(url);
+  mainWindow?.webContents.on("new-window", function (e, url) {
+    e.preventDefault();
+    require("electron").shell.openExternal(url);
+  });
 });
 
 // Quit the app once all windows are closed
